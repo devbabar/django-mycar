@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+    <!-- ========== error messages start========== -->
+    {% if messages %}
+    <h1 class="blink col-lg-8 col-lg-offset-2  text-center" style="background-color:red;">
+        <div class="messages">
+            {% for message in messages %}
+            <h3 style="color:black;" {% if message.tags %} class="{{message.tag}}"{% endif %}>{{message}}</h3>
+            {% endfor %}
+        </div></h1>
+    {% endif %}
+    <!-- =============== error messages ends =============  -->
+    <div class="row">
+        <div class="col-lg-10 col-md-10 col-sm-10 col-lg-offset-1 col-md-offset-1 col-sm-offset-1"> 
+            <!-- ============Search Bar starts================       -->
+            <div id="custom-search-input">
+                <div class="input-group col-md-12">
+                    <form method='GET' action='{% url "search" %}'>
+                    <input type='text' name='q' placeholder="Search All Cars By Make, Model or Keyword" class="col-md-11" style="height:33px;" value="{{request.GET.q}}">
+                        <span class="input-group-btn ">
+                            <button class="btn btn-info btn-lg" role='button' type='submit' value= 'search'>
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </span>
+                    </form> 
+                </div>
+            </div>
+            <!-- ============Search Bar ends============ -->
+            <!-- DropDown for MAKE AND MODEL start -->
+            <div class="col-md-4 col-sm-4">               
+                <div class='dropdown'>
+                    <button id="search-dropdown" class='btn btn-primary dropdown-toggle ' type='button' data-toggle='dropdown'>MAKE / MODEL  <span class='caret'></span></button>
+                    <ul id='make' class='dropdown-menu'>
+                        {% for i in car %}
+                            <li>
+                                <a href="{% url 'model_list' i.make__id %}">
+                                    <p>
+                                        <h4 style="font-family:Time New Roman;text-align:center;">{{i.make__make|title}}  ({{i.make__count}})</h4>
+                                        <!-- <h4 style="font-family:Time New Roman;">{{i.make__id}}--{{i.make__make|title}}--{{i.make__count}}</h4> -->
+                                    </p>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>                   
+                </div>
+            </div>          
+            <!-- DropDown for MAKE AND MODEL ends -->           
+            <!-- DropDown for TYPE start -->
+            <div class="col-md-4 col-sm-4">               
+                <div class='dropdown'>
+                    <button id="search-dropdown" class='btn btn-primary dropdown-toggle ' type='button' data-toggle='dropdown'>TYPE  <span class='caret'></span></button>
+                    <ul class='dropdown-menu'>
+                        {% for i in car_type %}
+                        <li>
+                            <a href="{% url 'type_list' i.catagory__id %}">
+                                <h4 style="font-family:Time New Roman;text-align:center;">{{i.catagory__catagory|title}}  ({{i.catagory__count}})</h4><hr>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>                   
+                </div>
+            </div>
+            <!-- DropDown for TYPE ends-->
+            <!-- DropDown for PRICE starts -->
+            <div class="col-md-4 col-sm-4">               
+                <div>                  
+                    <button id="search-dropdown" class="btn btn-primary btn-md" type='button' data-target="#myModal" data-toggle='modal'>PRICE</button>
+                </div>
+            </div>
+            <!-- DropDown for PRICE ends -->
+            <!-- Modal for PRICE starts -->
+            <div class="container">
+                <!-- Modal -->
+                <div class="modal fade" id="myModal" role="dialog">
+                    <div class="modal-dialog">
+                      <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Set a Maximum And Minimum Price Range</h4>
+                            </div>
+                            <div class="modal-body" style="padding:0px;">
+                                <p>
+                                <div class="col-md-12">
+                                    <div class="col-lg-offset-5"><h4>Shop Between:</h4></div>
+                                    <div class="col-lg-offset-3"> 
+                                    <form method='POST' action="{% url 'price_range' %}">                                   
+                                            {{form.as_p}}
+                                            {% csrf_token %}
+                                            <button id="modal-search-btn" class="btn btn-primary" role='button' type='submit' value= 'search'>Search</button>
+                                        </form>
+                                    </div>
+                                </div></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>                    
+                    </div>
+                </div>
+            </div>
+            <!-- Modal for PRICE ends -->
+            <!-- Ajax model option box Starts -->
+
+            <div id='model-list' class="col-md-8 col-md-offset-4">               
+                <div class='row'>
+                    {% for i in model_list %}                       
+                        <div id='box' >
+                           <!--  <div class='thumbnail'> -->
+                                <div class='rounded float-left' style='width:100;height:100px;text-align:center;'>
+                                    <a href="{% url 'model_detail_list' i.model__id %}"><h3>{{i.model__model}}<br>
+                                    {{i.car__count}}</h3></a>
+                                </div>
+                            <!-- </div> -->
+                        </div>                             
+                    {% endfor%}
+                </div>
+            </div>
+            <!-- Ajax model option box ends -->
+        </div>
+    </div>
+</div>
+<!-- Recently Posted 6 list box container :Start -->
+<div class='container'>
+    <h1 class="text-center">Recently Posted</h1>
+    {% for i in home_display_list %}
+    <!-- for i in home_display_list|slice:":6"  -->  
+        <div id="thumb-img-box" class='col-md-4' style="padding:5px;margin-bottom:10px;">
+            {% with i.img.all|first as j %}
+            <div id="list-img" class='thumbnail' style="margin-bottom:0px;">
+                <img id='thumb-img' src="{{j.image.url}}" class='rounded float-left'style="width:300;height:300px;">
+            </div>
+            {% endwith %}
+            <div class="col-md-12" style="height:70px;">
+                <h3><strong>{{i.year}} {{i.make|title}} {{i.model|title}}</strong></h3>
+            </div>
+            <div class="col-md-7">
+                <h4>No-haggle price</h4>
+                <h3 style="margin-bottom:10px;">${{i.price}}</h3>
+            </div>
+            <div class="col-md-5">
+                <h4>Mileage</h4>
+                <h3 style="margin-bottom:10px;">{{i.mileage}}</h3>
+            </div>
+            <div class='container col-md-12'>
+                 <!-- Trigger the modal with a button -->
+                <div id="load-btn" class="col-lg-4 col-md-12 col-sm-6 text-center"> 
+                    <a type="button" class="btn btn-primary " data-toggle="modal" data-target="#{{i.id}}" style="width:150px;">Key Features</a>
+                </div>
+                <div id="load-btn" class="col-lg-4 col-md-12 col-sm-6 col-lg-offset-3 text-center">                        
+                    <a href="{% url 'detail' i.id %}" id="load-btn" class="btn btn-primary btn-md" role='button' style="width:150px;">Full Detail Page</a>
+                </div> 
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="{{i.id}}" role="dialog">
+            <div class="modal-dialog">
+              <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Key Features</h4>
+                    </div>
+                    <div class="modal-body" style="padding:0px;">
+                        <p>
+                            <h1><strong>{{i.year}} {{i.make|title}} {{i.model|title}}</strong></h1>
+                            <div class="col-md-6">
+                                <h4>No-haggle price</h4>
+                                <h3>${{i.price}}</h3>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Year</h4>
+                                <h3>{{i.year}}</h3>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Stock#:</h4>
+                                <h3>{{i.id}}</h3>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Catagory</h4>
+                                <h3>{{i.catagory}}</h3>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Location:</h4>
+                                <h3>{{i.street}},<br>{{i.city}},<br> {{i.state}}</h3>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Mileage:</h4>
+                                <h3>{{i.mileage}}</h3>
+                            </div>
+                            <div class="col-md-12">
+                                <h4>Posted:</h4>
+                                <h3>{{i.timestamp}}</h3>
+                            </div>
+                            <div class="modal-footer">
+                            </div>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </div>                    
+            </div>
+        </div>    
+    {% endfor %}
+</div><!-- Recently Posted 6 list box container :Ends -->
+<!-- Finance offer container :Start -->
+<div id="finance-container" class="container">
+    <div class="row">
+        <div id="why-finance-with-us-btn" class="col-lg-6 text-center">
+            <h1>Why Finance with Us</h1>
+            <h4>"If you have had bad credit history or no credit history, don't worry! We will work to get you financed"</h4>
+            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. </p>
+            <button type="button" id="btn1" class="btn btn-warning btn-lg">Check it out..!</button>
+        </div>
+        <div id="key-finance-features-btn" class="col-lg-6 text-center">
+            <h1>Key Finance Features</h1>
+            <h4>Advertised rates depend on the individual's credit and key financing characteristics, including but not limited</h4>
+            <p>1, Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.<br>2, Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes.<br>3, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis.<br>4, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.<br>5, In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. </p>
+            <button type="button" id="btn2" class="btn btn-warning btn-lg">Check it out..!</button>
+        </div>
+         <div id="get-pre-qualified-btn" class="col-lg-6 col-lg-offset-3 text-center">
+            <h1>Get pre-qualified in minutes</h1>
+            <h4>Pre-Qualify For a Auto-Loan in Minutes.</h4>
+            <p>1, Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.<br>2, Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes.<br>3, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis.<br>4, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu.<br>5, In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. </p>
+            <button type="button" id="btn3" class="btn btn-warning btn-lg">Finance Page</button>
+        </div>
+    </div>
+</div>
+<div id="buy-or-sell-container" class="container">
+    <div>
+        <h1 class="text-center">Why buy or sell with us?</h1>
+    </div>
+    <div class="col-lg-6 col-lg-offset-3 text-center">
+        <button type="button" id="buying-btn" class="btn btn-warning btn-lg">Buying</button>
+        <button type="button" id="selling-btn" class="btn btn-warning btn-lg">Selling</button>
+    </div>
+    <div class="row">
+        <div id="buying" class="container" >
+            <div class="col-lg-4 text-center">
+                <i class="fa fa-search-minus fa-5x" aria-hidden="true"></i>
+                <h1>We Focused on you</h1>
+                <h4>"If you have had bad credit history or no credit history, don't worry! We will work to get you financed"</h4>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. </p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fa fa-certificate fa-5x" aria-hidden="true"></i>
+                <h1>Buy With Confidence</h1>
+                <h4>Advertised rates depend on the individual's credit and key financing characteristics, including but not limited</h4>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus.</p>
+            </div>
+             <div class="col-lg-4 text-center">
+                <i class="fa fa-credit-card fa-5x" aria-hidden="true"></i>
+                <h1>Easy Financing</h1>
+                <h4>Pre-Qualify For a Auto-Loan in Minutes.</h4>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus.</p>
+            </div>
+            <div class="col-lg-4 col-md-4 col-lg-offset-4 col-md-offset-3 col-sm-offset-2">
+                <button type="button" class="btn btn-warning btn-lg" style="width:360px;">Shop Now</button>
+            </div>
+        </div>
+        <div id="selling" class="container">
+            <div class="col-lg-4 text-center">
+                <i class="fa fa-car fa-5x" aria-hidden="true"></i>
+                <h1>WE Will Buy Any Car</h1>
+                <h4>"If you have had bad credit history or no credit history, don't worry! We will work to get you financed"</h4>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. </p>
+            </div>
+            <div class="col-lg-4 text-center">
+                <i class="fa fa-clock-o fa-5x" aria-hidden="true"></i>
+                <h1>Quick Appraisals</h1>
+                <h4>Advertised rates depend on the individual's credit and key financing characteristics, including but not limited</h4>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus.</p>
+            </div>
+             <div class="col-lg-4 text-center">
+                <i class="fa fa-money fa-5x" aria-hidden="true"></i>
+                <h1>Great Offers<h1>
+                <h4>Pre-Qualify For a Auto-Loan in Minutes.</h4>
+                <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus.</p>
+            </div>
+            <div class="col-lg-4 col-md-4 col-lg-offset-4 col-md-offset-3 col-sm-offset-2">
+                <button type="button" class="btn btn-warning btn-lg" style="width:360px;">Schedule An Appraisal</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

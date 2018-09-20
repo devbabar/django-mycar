@@ -1,0 +1,120 @@
+
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+
+
+<div class="container">   
+    <div class="col-lg-4 col-lg-offset-4  text-center" style="background-color:yellow;">
+        <h1 class="blink">We have found {{car_model|length}} {% if car_model|length == 1 %}result {% else %} results {% endif %}</h1>
+    </div>
+  	{% for i in car_model %}
+        <div class="row">
+            <div class="col-md-12 list-item">
+            	<div id="heading-color" class="col-md-6">
+                    <p>
+                        <h1><strong>{{i.year}} {{i.make|title}} {{i.model|title}}</strong></h1>
+                        <div class="col-md-5 col-sm-5 col-sm-offset-1 col-md-offset-0">
+                            <h4>No-haggle price</h4>
+                            <h3>${{i.price}}</h3>
+                        </div>
+                        <div class="col-md-5 col-sm-5">
+                            <h4>Year</h4>
+                            <h3>${{i.year}}</h3>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-sm-offset-1 col-md-offset-0">
+                            <h4>Stock#:</h4>
+                            <h3>{{i.id}}</h3>
+                        </div>
+                        <div class="col-md-5 col-sm-5">
+                            <h4>Catagory</h4>
+                            <h3>{{i.catagory}}</h3>
+                        </div>
+                        <div class="col-md-5 col-sm-12 col-sm-offset-1 col-md-offset-0">
+                            <h4>Location:</h4>
+                            <h3>{{i.street|title}},<br>{{i.city|title}},<br> {{i.state}}</h3>
+                        </div>
+                         <div class="col-md-5 col-sm-5 col-sm-offset-1 col-md-offset-0">
+                            <h4>Posted:</h4>
+                            <h3>{{i.timestamp}}</h3>
+                        </div>
+                    </p>
+                </div>
+                 <div id="img-bx" class="container" >
+                	<div class='row'>
+                        {% with i.img.all|first as j %}                   
+                            <div id="list-img"  class='col-md-6 col-md-offset-6' style="margin-bottom:0px;">                            
+                                <img id='thumb-single-img' src="{{j.image.url}}" class='rounded float-left'style="width:100%;height:300px;">            
+                            </div>
+                        {% endwith %}                    
+                        {% for j in i.img.all %}
+                            <div class='col-md-2 col-sm-4 col-xs-4' style="padding:0px;margin-top:0px;">
+                                <div id="list-img-car-list" class='thumbnail '> 
+                                    <img id='thumb-img-car-list' src="{{j.image.url}}" class='rounded float-left ' style="width:100;height:100px;">
+                                </div>
+                            </div>
+                        {% endfor%}
+                	</div>
+                </div>
+                <div id="load-btn" class="col-md-6 col-md-offset-6 text-center">                    	
+                   	<a href="{% url 'detail' i.id %}" id="load-btn" class="btn btn-primary btn-md" role='button' style="width:200px;">Full Detail Page</a>
+            		<!-- Trigger the modal with a button -->
+            		<a type="button" class="btn btn-primary btn-md" data-toggle="modal" data-target="#{{i.id}}" style="width:200px;">Key Features</a>
+            	</div>
+            </div>
+            <div class="container">
+				<!-- Modal -->
+				<div class="modal fade" id="{{i.id}}" role="dialog">
+					<div class="modal-dialog">
+					  <!-- Modal content-->
+					  	<div class="modal-content">
+						    <div class="modal-header">
+						       	<button type="button" class="close" data-dismiss="modal">&times;</button>
+						       	<h4 class="modal-title">Key Features</h4>
+						    </div>
+						    <div class="modal-body" style="padding:0px;">
+						       	<p>
+                                    <h1><strong>{{i.year}} {{i.make|title}} {{i.model|title}}</strong></h1>
+                                    <div class="col-md-6">
+                                        <h4>No-haggle price</h4>
+                                        <h3>${{i.price}}</h3>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h4>Year</h4>
+                                        <h3>{{i.year}}</h3>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h4>Stock#:</h4>
+                                        <h3>{{i.id}}</h3>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h4>Catagory</h4>
+                                        <h3>{{i.catagory}}</h3>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h4>Location:</h4>
+                                        <h3>{{i.street}},<br>{{i.city}},<br> {{i.state}}</h3>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h4>Mileage:</h4>
+                                        <h3>{{i.mileage}}</h3>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <h4>Posted:</h4>
+                                        <h3>{{i.timestamp}}</h3>
+                                    </div>
+                                    <div class="modal-footer">
+                                    </div>
+                                </p>
+					  	    </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                            </div>					  
+					   </div>
+				    </div>
+                </div>
+            </div><hr><hr>
+    {% endfor %}
+</div>
+
+{% endblock %}

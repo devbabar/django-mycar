@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+	
+	<form action='' method='POST'>
+		{{form.as_table}}
+		{% csrf_token %}
+		<input type='submit' value='Submit'>
+	</form>
+
+	{% for i in result %}
+	<h3>{{i.catagory}}</h3>
+	<h3>{{i.make}}</h3>
+	<h3>{{i.model}}</h3>
+	<h3>{{i.price}}</h3>
+	{% endfor %}
+
+{% endblock %}
