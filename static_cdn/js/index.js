@@ -49,27 +49,6 @@ $(document).ready(function(){
 	// This Ajax call will display selected car models | Ends
 	// ========================================================
 	
-	// ==================================
-	// slide in as we scroll down | start
-	// ==================================
-	$('.mama').not(':eq(0)').css('opacity',0);
-	$(window).scroll(function(){
-		var windowHeight = $(window).height();
-		var windowScrollPosTop = $(window).scrollTop();
-		var windowScrollPosBottom = windowHeight + windowScrollPosTop;
-		
-		var objectOffset = $('.mama').offset();
-		var objectOffsetTop = objectOffset.top;
-
-		$('.status').html(objectOffsetTop);
-		if (!$('.mama').hasClass('animation-complete')){
-			if (windowScrollPosBottom > objectOffsetTop){
-				$('.mama').animate({'opacity':1},
-				3000).addClass('animation-complete');
-			}		
-		}
-		
-	});
 
 	// ================================================================================
 	// To check if modal inputs satisfy the conditions and enable search button | start
